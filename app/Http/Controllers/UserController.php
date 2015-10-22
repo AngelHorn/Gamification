@@ -1,10 +1,10 @@
 <?php
 
 namespace App\Http\Controllers;
-use App\User;
-use App\Http\Controllers\Controller;
 
-//use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\View;
+
 class UserController extends Controller
 {
 
@@ -19,6 +19,7 @@ class UserController extends Controller
         $fuck = DB::table('f_chuzheng')->get();
         var_dump($fuck);
         echo "fuck" . '<br>';
+        return View::make('fuck');
     }
 
 }
