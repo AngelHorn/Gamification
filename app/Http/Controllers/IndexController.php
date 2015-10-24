@@ -2,10 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\View;
 
-class UserController extends Controller
+class IndexController extends Controller
 {
 
     /**
@@ -16,9 +15,7 @@ class UserController extends Controller
      */
     public function getIndex()
     {
-        $fuck = DB::table('quests')->get();
-        var_dump($fuck);
-        return View::make('fuck');
+        return View::make('index');
     }
 
 }

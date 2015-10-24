@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Validator;
+use stdClass;
 
 class QuestsController extends Controller
 {
@@ -90,6 +91,50 @@ class QuestsController extends Controller
         } else {
             $this->export(50000);
         }
+    }
+
+    /**
+     * @return Response
+     */
+    public function getIndexTree()
+    {
+        $quests = DB::table('quests')->get();
+        $tree_json = $this->arrayToTreeMap(json_decode(json_encode($quests), 1));
+        $this->export(200, $tree_json);
+    }
+
+    private function arrayToTreeMap($menus)
+    {
+        $id = $level = 0;
+        $menu_objects = array();
+        $tree = array();
+        $not_root_menu = array();
+        foreach ($menus as $menu) {
+            $menu_object = new stdClass();
+            $menu_object->name = $menu['text'];
+            $menu_object->menu = $menu;
+            $id = $menu['id'];
+            $level = $menu['father_id'];
+            $menu_object->children = array();
+            $menu_objects[$id] = $menu_object;
+            if ($level) {
+                $not_root_menu[] = $menu_object;
+            } else {
+                $tree[] = $menu_object;
+            }
+        }
+
+        foreach ($not_root_menu as $menu_object) {
+            $menu = $menu_object->menu;
+            $id = $menu['id'];
+            $level = $menu['father_id'];
+            $menu_object->size = 100;
+            if (isset($menu_objects[$level]->size)) {
+                unset($menu_objects[$level]->size);
+            }
+            $menu_objects[$level]->children[] = $menu_object;
+        }
+        return array("name" => "Root", "children" => $tree);
     }
 
 }
