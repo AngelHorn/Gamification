@@ -40,10 +40,23 @@ class QuestsController extends Controller
     }
 
     /**
+     * @return Response
+     */
+    public function getQuest($id)
+    {
+        $quest = DB::table('quests')->where('id', $id)->first();
+        if ($quest) {
+            $this->export(200, $quest);
+        } else {
+            $this->export(40400);
+        }
+    }
+
+    /**
      * @param  int $id
      * @return Response
      */
-    public function putIndex($id)
+    public function putQuest($id)
     {
         $input = Input::all();
         $rules = array();
@@ -67,7 +80,7 @@ class QuestsController extends Controller
      * @param  int $id
      * @return Response
      */
-    public function deleteIndex($id)
+    public function deleteQuest($id)
     {
         $isCommit = DB::table('quests')->where('id', $id)->update(array(
             'state' => 4,
