@@ -16,9 +16,8 @@ class UserController extends Controller
      */
     public function getIndex()
     {
-        $fuck = DB::table('f_chuzheng')->get();
+        $fuck = DB::table('quests')->get();
         var_dump($fuck);
-        echo "fuck" . '<br>';
         return View::make('fuck');
     }
 

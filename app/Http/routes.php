@@ -1,14 +1,6 @@
 <?php
 
-/*
-|--------------------------------------------------------------------------
-| Application Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register all of the routes for an application.
-| It is a breeze. Simply tell Lumen the URIs it should respond to
-| and give it the Closure to call when that URI is requested.
-|
-*/
-
-$app->get('/', 'UserController@getIndex');
+$app->get('quests', 'QuestsController@getIndex');
+$app->post('quests', 'QuestsController@postIndex');
+$app->put('quests/{id}', 'QuestsController@putIndex');
+$app->delete('quests/{id}', 'QuestsController@deleteIndex');
