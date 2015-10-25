@@ -112,3 +112,36 @@ function size(d) {
 function count(d) {
     return 1;
 }
+
+function arrayToTreeMap(menus) {
+    var id = 0,level = 0;
+    var menu_objects = [],tree = [],not_root_menu = [];
+    for (var menu of menus) {
+        var menu_object = {
+            name: menu['text'],
+            menu: menu,
+            children: []
+        }
+        var id = menu['id'];
+        var level = menu['father_id'];
+        menu_objects[id] = menu_object;
+        if (level) {
+            not_root_menu.push(menu_object);
+        } else {
+            tree.push(menu_object);
+        }
+
+    }
+    for (var menu_object of not_root_menu) {
+        var menu = menu_object['menu'];
+        var id = menu['id'];
+        var level = menu['father_id'];
+        menu_object['size'] = 100;
+        if (typeof menu_objects['size'] != 'undefined') {
+            delete(menu_objects['size']);
+        }
+        menu_objects[level]['children'].push(menu_object);
+    }
+    var treeMap = {name: "Root", children: tree};
+    return treeMap;
+}

@@ -23,12 +23,12 @@
 <div id="body">
 </div>
 
-<script src="/assets/js/index.js"></script>
 <script src="/assets/dist/jquery.min.js"></script>
+<script src="/assets/js/index.js"></script>
 <script type="text/javascript">
     $(function () {
         d3.json('/quests/tree', function (data) {
-            renderMap(data['data']);
+            renderMap(arrayToTreeMap(data['data']));
         });
     });
 </script>

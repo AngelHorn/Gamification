@@ -99,10 +99,13 @@ class QuestsController extends Controller
     public function getIndexTree()
     {
         $quests = DB::table('quests')->get();
-        $tree_json = $this->arrayToTreeMap(json_decode(json_encode($quests), 1));
-        $this->export(200, $tree_json);
+//        $tree_json = $this->arrayToTreeMap(json_decode(json_encode($quests), 1));
+        $this->export(200, $quests);
     }
 
+    /*
+     * 暂时弃用 在客户端重新写了一个新的function来代替他
+     */
     private function arrayToTreeMap($menus)
     {
         $id = $level = 0;
