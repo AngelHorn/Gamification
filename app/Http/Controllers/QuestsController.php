@@ -31,10 +31,22 @@ class QuestsController extends Controller
             $this->export(40003);
             die;
         }
-
-        $isCommit = DB::table('quests')->insertGetId($input);
+        $insert_arr = array(
+          'text'=>$input['text'],
+          'note'=>"",
+          'exp'=>0,
+          'gold'=>0,
+          'state'=>0,
+          'type'=>$input['type'],
+          'deadline_at'=>null,
+          'alert_at'=>null,
+          'class_id'=>null,
+          'father_id'=>null,
+        );
+        $isCommit = DB::table('quests')->insertGetId($insert_arr);
         if ($isCommit) {
-            $this->export(200);
+
+            $this->export(200,DB::table('quests')->where('id',$isCommit)->first());
         } else {
             $this->export(50000);
         }
