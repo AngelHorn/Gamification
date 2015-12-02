@@ -31,7 +31,7 @@ class QuestsController extends Controller
             $this->export(40003);
             die;
         }
-        $insert_arr = array(
+        $data_arr = array(
           'text'=>$input['text'],
           'note'=>"",
           'exp'=>0,
@@ -43,10 +43,10 @@ class QuestsController extends Controller
           'class_id'=>null,
           'father_id'=>null,
         );
-        $isCommit = DB::table('quests')->insertGetId($insert_arr);
-        if ($isCommit) {
+        $newId = DB::table('quests')->insertGetId($data_arr);
+        if (is_int($newId)) {
 
-            $this->export(200,DB::table('quests')->where('id',$isCommit)->first());
+            $this->export(200,DB::table('quests')->where('id',$newId)->first());
         } else {
             $this->export(50000);
         }
@@ -78,11 +78,9 @@ class QuestsController extends Controller
             $this->export(40003);
             die;
         }
-
-        $isCommit = DB::table('quests')->where('id', $id)->update(array(
-            'state' => 4,
-        ));
-        if ($isCommit) {
+        $data_arr = $input;
+        $isCommit = DB::table('quests')->where('id', $id)->update($data_arr);
+        if ($isCommit > 0) {
             $this->export(200);
         } else {
             $this->export(50000);
@@ -98,7 +96,7 @@ class QuestsController extends Controller
         $isCommit = DB::table('quests')->where('id', $id)->update(array(
             'state' => 4,
         ));
-        if ($isCommit) {
+        if ($isCommit > 0) {
             $this->export(200);
         } else {
             $this->export(50000);
