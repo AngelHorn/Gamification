@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Validator;
 use stdClass;
 
-class QuestsController extends Controller
+class SchedulesController extends Controller
 {
 
     /**
@@ -15,7 +15,7 @@ class QuestsController extends Controller
      */
     public function getIndex()
     {
-        $quests = DB::table('quests')->get();
+        $quests = DB::table('schedules')->get();
         $this->export(200, $quests);
     }
 
@@ -30,7 +30,7 @@ class QuestsController extends Controller
             'exp' => 'numeric',
             'gold' => 'numeric',
             'type' => 'required|numeric',
-            'deadline_at' => 'required_if:type,4|date',
+            'deadline_at' => 'date',
             'alert_at' => 'date',
             'class_id' => 'numeric',
             'father_id' => 'numeric',
@@ -51,15 +51,13 @@ class QuestsController extends Controller
         isset($input['gold']) ? $data_arr['gold'] = $input['gold'] : '';
         isset($input['class_id']) ? $data_arr['class_id'] = $input['class_id'] : '';
         isset($input['father_id']) ? $data_arr['father_id'] = $input['father_id'] : '';
+        isset($input['deadline_at']) ? $data_arr['deadline_at'] = $input['deadline_at'] : '';
         isset($input['alert_at']) ? $data_arr['alert_at'] = $input['alert_at'] : '';
-        isset($input['deadline_at']) ?
-            $data_arr_with_deadline = $this->questTypeFilter($input['type'], $input['deadline_at']) :
-            $data_arr_with_deadline = $this->questTypeFilter($input['type']);
-        $data_arr = array_merge($data_arr, $data_arr_with_deadline);
-        $newId = DB::table('quests')->insertGetId($data_arr);
+
+        $newId = DB::table('schedules')->insertGetId($data_arr);
         if (is_int($newId)) {
 
-            $this->export(200, DB::table('quests')->where('id', $newId)->first());
+            $this->export(200, DB::table('schedules')->where('id', $newId)->first());
         } else {
             $this->export(50000);
         }
@@ -82,14 +80,14 @@ class QuestsController extends Controller
      * @param  int $id
      * @return Response
      */
-    public function putQuest($id)
+    public function putSchedule($id)
     {
         $input = Input::all();
         $rules = array(
             'exp' => 'numeric',
             'gold' => 'numeric',
             'type' => 'numeric',
-            'deadline_at' => 'required_if:type,4|date',
+            'deadline_at' => 'date',
             'alert_at' => 'date',
             'class_id' => 'numeric',
             'father_id' => 'numeric',
@@ -101,7 +99,9 @@ class QuestsController extends Controller
             die;
         }
 
-        $data_arr = array();
+        $data_arr = array(
+
+        );
         isset($input['text']) ? $data_arr['text'] = $input['text'] : '';
         isset($input['type']) ? $data_arr['type'] = $input['type'] : '';
         isset($input['state']) ? $data_arr['state'] = $input['state'] : '';
@@ -110,11 +110,9 @@ class QuestsController extends Controller
         isset($input['gold']) ? $data_arr['gold'] = $input['gold'] : '';
         isset($input['class_id']) ? $data_arr['class_id'] = $input['class_id'] : '';
         isset($input['father_id']) ? $data_arr['father_id'] = $input['father_id'] : '';
+        isset($input['deadline_at']) ? $data_arr['deadline_at'] = $input['deadline_at'] : '';
         isset($input['alert_at']) ? $data_arr['alert_at'] = $input['alert_at'] : '';
-        isset($input['deadline_at']) ?
-            $data_arr_with_deadline = $this->questTypeFilter($input['type'], $input['deadline_at']) :
-            $data_arr_with_deadline = $this->questTypeFilter($input['type']);
-        $data_arr = array_merge($data_arr, $data_arr_with_deadline);
+
         $isCommit = DB::table('quests')->where('id', $id)->update($data_arr);
         if ($isCommit > 0) {
             $this->export(200, DB::table('quests')->where('id', $id)->first());
@@ -186,28 +184,4 @@ class QuestsController extends Controller
         return array("name" => "Root", "children" => $tree);
     }
 
-    /*
-     * @return Array
-     */
-    private function questTypeFilter($type, $deadline_at = null)
-    {
-        $data_arr = array();
-        switch ($type) {
-            case "1":
-                $data_arr['deadline_at'] = date('Y-m-d');
-                break;
-            case "4":
-                if ($deadline_at == date('Y-m-d')) {
-                    $data_arr['type'] = '1';
-                }
-                $data_arr['deadline_at'] = $deadline_at;
-                break;
-            case "0":
-            case "2":
-            case "3":
-            default:
-                $data_arr['deadline_at'] = null;
-        }
-        return $data_arr;
-    }
 }
