@@ -1,4 +1,7 @@
 <?php
+/*
+ * 0 0 * * * php /root/nginx/html/gamification/app/Console/Commands/crontab/daily_schedules.php
+ */
 $app = require __DIR__ . '/../../../../bootstrap/app.php';
 $todayDateAt = date("Y-m-d");
 $schedules_list = DB::table('schedules')
@@ -55,7 +58,7 @@ function handlerRepeatType_2($schedule, $repeat_ordinal, $todayDateAt)
 {
     $data_arr = array(
         'text' => $schedule->text . '[' . $repeat_ordinal . ']',
-        'type' => $schedule->type,
+        'type' => 1,
         'note' => $schedule->note,
         'exp' => $schedule->exp,
         'gold' => $schedule->gold,
@@ -71,7 +74,7 @@ function handlerRepeatType_3($schedule, $todayDateAt)
 {
     $data_arr = array(
         'text' => $schedule->text,
-        'type' => $schedule->type,
+        'type' => 1,
         'note' => $schedule->note,
         'exp' => $schedule->exp,
         'gold' => $schedule->gold,

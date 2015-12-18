@@ -37,7 +37,7 @@ class QuestsController extends Controller
         );
         $validator = Validator::make($input, $rules);
         if ($validator->fails()) {
-            $this->export(40003);
+            $this->export(403);
             die;
         }
 
@@ -61,7 +61,7 @@ class QuestsController extends Controller
 
             $this->export(200, DB::table('quests')->where('id', $newId)->first());
         } else {
-            $this->export(50000);
+            $this->export(500);
         }
     }
 
@@ -74,7 +74,7 @@ class QuestsController extends Controller
         if ($quest) {
             $this->export(200, $quest);
         } else {
-            $this->export(40400);
+            $this->export(404);
         }
     }
 
@@ -97,7 +97,7 @@ class QuestsController extends Controller
         );
         $validator = Validator::make($input, $rules);
         if ($validator->fails()) {
-            $this->export(40003);
+            $this->export(403);
             die;
         }
 
@@ -119,7 +119,7 @@ class QuestsController extends Controller
         if ($isCommit > 0) {
             $this->export(200, DB::table('quests')->where('id', $id)->first());
         } else {
-            $this->export(50000);
+            $this->export(500);
         }
     }
 
@@ -135,7 +135,7 @@ class QuestsController extends Controller
         if ($isCommit > 0) {
             $this->export(200);
         } else {
-            $this->export(50000);
+            $this->export(500);
         }
     }
 

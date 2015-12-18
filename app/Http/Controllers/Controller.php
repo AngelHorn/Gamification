@@ -7,10 +7,14 @@ use Laravel\Lumen\Routing\Controller as BaseController;
 
 class Controller extends BaseController
 {
-    public function __construct(){
+    static $http_codes = array();
+
+    public function __construct()
+    {
         header("Access-Control-Allow-Origin: *");
         // header("Access-Control-Allow-Methods:GET,POST,PUT,DELETE");
         header("Content-Type: application/json");
+        $this->requestHeaderFilter();
     }
 
     public function export($code, $data = "", $message = "")
@@ -22,4 +26,15 @@ class Controller extends BaseController
         ), JSON_UNESCAPED_UNICODE);
         return;
     }
+
+    public function requestHeaderFilter()
+    {
+        $request_date = Request::header('Request-Date');
+        if ($request_date != date("Ymd")) {
+            $this->export(413);
+            die;
+        }
+    }
+
+
 }
