@@ -51,7 +51,16 @@ function handlerRepeatType_1($schedule)
         'state' => 0,
     );
 
-    DB::table('quests')->insertGetId($data_arr);
+    DB::beginTransaction();
+    $is_commit_c = DB::table('quests')->insertGetId($data_arr);
+    //更新start_at到今天
+    $is_commit_u = DB::table('schedules')->where('id', $schedule->id)
+        ->update(array('state' => 1));
+    if ($is_commit_c && is_int($is_commit_u)) {
+        DB::commit();
+    } else {
+        DB::rollback();
+    }
 }
 
 function handlerRepeatType_2($schedule, $repeat_ordinal, $todayDateAt)
@@ -66,8 +75,21 @@ function handlerRepeatType_2($schedule, $repeat_ordinal, $todayDateAt)
         'schedule_id' => $schedule->id,
         'state' => 0,
     );
-
-    DB::table('quests')->insertGetId($data_arr);
+    if ($repeat_ordinal === 10) {
+        //最后一次
+        DB::beginTransaction();
+        $is_commit_c = DB::table('quests')->insertGetId($data_arr);
+        //更新start_at到今天
+        $is_commit_u = DB::table('schedules')->where('id', $schedule->id)
+            ->update(array('state' => 1));
+        if ($is_commit_c && is_int($is_commit_u)) {
+            DB::commit();
+        } else {
+            DB::rollback();
+        }
+    } else {
+        DB::table('quests')->insertGetId($data_arr);
+    }
 }
 
 function handlerRepeatType_3($schedule, $todayDateAt)
@@ -83,12 +105,12 @@ function handlerRepeatType_3($schedule, $todayDateAt)
         'state' => 0,
     );
 
-    //加事务是不是会更好一点呢
     DB::beginTransaction();
     $is_commit_c = DB::table('quests')->insertGetId($data_arr);
     //更新start_at到今天
-    $is_commit_u = DB::table('schedules')->update(array('start_at' => $todayDateAt));
-    if ($is_commit_c && $is_commit_u) {
+    $is_commit_u = DB::table('schedules')->where('id', $schedule->id)
+        ->update(array('start_at' => $todayDateAt));
+    if ($is_commit_c && is_int($is_commit_u)) {
         DB::commit();
     } else {
         DB::rollback();

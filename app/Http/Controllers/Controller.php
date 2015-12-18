@@ -14,7 +14,7 @@ class Controller extends BaseController
         header("Access-Control-Allow-Origin: *");
         // header("Access-Control-Allow-Methods:GET,POST,PUT,DELETE");
         header("Content-Type: application/json");
-        $this->requestHeaderFilter();
+        $this->sessionFilter();
     }
 
     public function export($code, $data = "", $message = "")
@@ -27,12 +27,16 @@ class Controller extends BaseController
         return;
     }
 
-    public function requestHeaderFilter()
+    public function sessionFilter()
     {
-        $request_date = Request::header('Request-Date');
-        if ($request_date != date("Ymd")) {
-            $this->export(413);
-            die;
+        if (Session::has('account')) {
+            if (Session::get('login-date') != date("Ymd")) {
+                $this->export(413);
+                die;
+            }
+        } else {
+            Session::set('account', array());
+            Session::set('login-date', date("Ymd"));
         }
     }
 
