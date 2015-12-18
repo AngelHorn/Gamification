@@ -82,6 +82,7 @@ class SchedulesController extends Controller
      */
     public function putSchedule($id)
     {
+        //更新repeat_type的时候 一定要检测start_at
         $input = Input::all();
         $rules = array(
             'exp' => 'numeric',

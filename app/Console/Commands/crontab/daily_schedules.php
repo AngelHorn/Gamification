@@ -20,12 +20,14 @@ foreach ($schedules_list as $schedule) {
             //判断学习重复周期中是否有今日
             $repeat_ordinal = computeRepeatType_2($schedule->start_at, $todayDateAt);
             if ($repeat_ordinal !== false) {
-                handlerRepeatType_2($schedule, $repeat_ordinal);
+                handlerRepeatType_2($schedule, $repeat_ordinal, $todayDateAt);
             }
             break;
         case 3:
             //判断重复周期种是否有今日
-            if (1 == $todayDateAt) {
+            $isToday = computeRepeatType_3($schedule, $todayDateAt);
+            if ($isToday === true) {
+                handlerRepeatType_3($schedule, $todayDateAt);
             }
             break;
         default:
@@ -49,15 +51,15 @@ function handlerRepeatType_1($schedule)
     DB::table('quests')->insertGetId($data_arr);
 }
 
-function handlerRepeatType_2($schedule, $repeat_ordinal)
+function handlerRepeatType_2($schedule, $repeat_ordinal, $todayDateAt)
 {
     $data_arr = array(
-        'text' => $schedule->text . '<' . $repeat_ordinal . '>',
+        'text' => $schedule->text . '[' . $repeat_ordinal . ']',
         'type' => $schedule->type,
         'note' => $schedule->note,
         'exp' => $schedule->exp,
         'gold' => $schedule->gold,
-        'deadline_at' => $schedule->start_at,
+        'deadline_at' => $todayDateAt,
         'schedule_id' => $schedule->id,
         'state' => 0,
     );
@@ -65,8 +67,29 @@ function handlerRepeatType_2($schedule, $repeat_ordinal)
     DB::table('quests')->insertGetId($data_arr);
 }
 
-function handlerRepeatType_3()
+function handlerRepeatType_3($schedule, $todayDateAt)
 {
+    $data_arr = array(
+        'text' => $schedule->text,
+        'type' => $schedule->type,
+        'note' => $schedule->note,
+        'exp' => $schedule->exp,
+        'gold' => $schedule->gold,
+        'deadline_at' => $todayDateAt,
+        'schedule_id' => $schedule->id,
+        'state' => 0,
+    );
+
+    //加事务是不是会更好一点呢
+    DB::beginTransaction();
+    $is_commit_c = DB::table('quests')->insertGetId($data_arr);
+    //更新start_at到今天
+    $is_commit_u = DB::table('schedules')->update(array('start_at' => $todayDateAt));
+    if ($is_commit_c && $is_commit_u) {
+        DB::commit();
+    } else {
+        DB::rollback();
+    }
 }
 
 /*
@@ -83,6 +106,33 @@ function computeRepeatType_2($schedule_start_at, $todayDateAt)
     return array_search($difference_days, $repeat_days_list);
 }
 
-function computeRepeatType_3($schedule_start_at, $todayDateAt)
+/*
+ * 计算今天是否是一个重复任务的标准日
+ * @return Bool
+ */
+function computeRepeatType_3($schedule, $todayDateAt)
 {
+    //1=按日；2=按周；3=按月；4=按年；
+    switch ($schedule->repeat_limitless_type) {
+        case 1:
+            $newDay_at = strtotime("+1 day", strtotime($schedule->start_at));
+            break;
+        case 2:
+            $newDay_at = strtotime("+1 week", strtotime($schedule->start_at));
+            break;
+        case 3:
+            $newDay_at = strtotime("+1 month", strtotime($schedule->start_at));
+            break;
+        case 4:
+            $newDay_at = strtotime("+1 year", strtotime($schedule->start_at));
+            break;
+        default:
+            Log::error("我们中出了一个叛徒:" . json_encode($schedule));
+            $newDay_at = false;
+    }
+    //如果大 就放弃  如果等于就return 如果小 证明出错了
+    if (strtotime($todayDateAt) < $newDay_at) {
+        Log::error("有任务出错了 叛徒:" . json_encode($schedule));
+    }
+    return strtotime($todayDateAt) === $newDay_at;
 }
