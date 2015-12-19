@@ -27,10 +27,10 @@ class SchedulesController extends Controller
         $input = Input::all();
         $rules = array(
             'text' => 'required',
+            'start_at' => 'required|date',
+            'repeat_type' => 'required|numeric',
             'exp' => 'numeric',
             'gold' => 'numeric',
-            'type' => 'required|numeric',
-            'deadline_at' => 'date',
             'alert_at' => 'date',
             'class_id' => 'numeric',
             'father_id' => 'numeric',
@@ -43,20 +43,19 @@ class SchedulesController extends Controller
 
         $data_arr = array(
             'text' => $input['text'],
-            'type' => $input['type'],
+            'repeat_type' => $input['repeat_type'],
+            'start_at' => $input['start_at'],
             'state' => 0,
         );
-        isset($input['note']) ? $data_arr['note'] = $input['note'] : '';
-        isset($input['exp']) ? $data_arr['exp'] = $input['exp'] : '';
-        isset($input['gold']) ? $data_arr['gold'] = $input['gold'] : '';
-        isset($input['class_id']) ? $data_arr['class_id'] = $input['class_id'] : '';
-        isset($input['father_id']) ? $data_arr['father_id'] = $input['father_id'] : '';
-        isset($input['deadline_at']) ? $data_arr['deadline_at'] = $input['deadline_at'] : '';
-        isset($input['alert_at']) ? $data_arr['alert_at'] = $input['alert_at'] : '';
+        isset($input['note']) ? $data_arr['note'] = $input['note'] : null;
+        isset($input['exp']) ? $data_arr['exp'] = $input['exp'] : null;
+        isset($input['gold']) ? $data_arr['gold'] = $input['gold'] : null;
+        isset($input['class_id']) ? $data_arr['class_id'] = $input['class_id'] : null;
+        isset($input['father_id']) ? $data_arr['father_id'] = $input['father_id'] : null;
+        isset($input['alert_at']) ? $data_arr['alert_at'] = $input['alert_at'] : null;
 
         $newId = DB::table('schedules')->insertGetId($data_arr);
         if (is_int($newId)) {
-
             $this->export(200, DB::table('schedules')->where('id', $newId)->first());
         } else {
             $this->export(500);
@@ -100,9 +99,7 @@ class SchedulesController extends Controller
             die;
         }
 
-        $data_arr = array(
-
-        );
+        $data_arr = array();
         isset($input['text']) ? $data_arr['text'] = $input['text'] : '';
         isset($input['type']) ? $data_arr['type'] = $input['type'] : '';
         isset($input['state']) ? $data_arr['state'] = $input['state'] : '';

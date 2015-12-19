@@ -27,6 +27,9 @@ foreach ($schedules_list as $schedule) {
             }
             break;
         case 3:
+        case 4:
+        case 5:
+        case 6:
             //判断重复周期种是否有今日
             $isToday = computeRepeatType_3($schedule, $todayDateAt);
             if ($isToday === true) {
@@ -42,7 +45,7 @@ function handlerRepeatType_1($schedule)
 {
     $data_arr = array(
         'text' => $schedule->text,
-        'type' => $schedule->type,
+        'type' => 1,
         'note' => $schedule->note,
         'exp' => $schedule->exp,
         'gold' => $schedule->gold,
@@ -138,17 +141,17 @@ function computeRepeatType_2($schedule_start_at, $todayDateAt)
 function computeRepeatType_3($schedule, $todayDateAt)
 {
     //1=按日；2=按周；3=按月；4=按年；
-    switch ($schedule->repeat_limitless_type) {
-        case 1:
+    switch ($schedule->repeat_type) {
+        case 3:
             $newDay_at = strtotime("+1 day", strtotime($schedule->start_at));
             break;
-        case 2:
+        case 4:
             $newDay_at = strtotime("+1 week", strtotime($schedule->start_at));
             break;
-        case 3:
+        case 5:
             $newDay_at = strtotime("+1 month", strtotime($schedule->start_at));
             break;
-        case 4:
+        case 6:
             $newDay_at = strtotime("+1 year", strtotime($schedule->start_at));
             break;
         default:
