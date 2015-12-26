@@ -84,14 +84,14 @@ class SchedulesController extends Controller
         //更新repeat_type的时候 一定要检测start_at
         $input = Input::all();
         $rules = array(
+            'text' => 'required',
+            'start_at' => 'required|date',
+            'repeat_type' => 'required|numeric',
             'exp' => 'numeric',
             'gold' => 'numeric',
-            'type' => 'numeric',
-            'deadline_at' => 'date',
             'alert_at' => 'date',
             'class_id' => 'numeric',
             'father_id' => 'numeric',
-            'state' => 'numeric',
         );
         $validator = Validator::make($input, $rules);
         if ($validator->fails()) {
@@ -99,21 +99,21 @@ class SchedulesController extends Controller
             die;
         }
 
-        $data_arr = array();
-        isset($input['text']) ? $data_arr['text'] = $input['text'] : '';
-        isset($input['type']) ? $data_arr['type'] = $input['type'] : '';
-        isset($input['state']) ? $data_arr['state'] = $input['state'] : '';
+        $data_arr = array(
+            'text' => $input['text'],
+            'repeat_type' => $input['repeat_type'],
+            'start_at' => $input['start_at'],
+        );
         isset($input['note']) ? $data_arr['note'] = $input['note'] : '';
         isset($input['exp']) ? $data_arr['exp'] = $input['exp'] : '';
         isset($input['gold']) ? $data_arr['gold'] = $input['gold'] : '';
         isset($input['class_id']) ? $data_arr['class_id'] = $input['class_id'] : '';
         isset($input['father_id']) ? $data_arr['father_id'] = $input['father_id'] : '';
-        isset($input['deadline_at']) ? $data_arr['deadline_at'] = $input['deadline_at'] : '';
         isset($input['alert_at']) ? $data_arr['alert_at'] = $input['alert_at'] : '';
 
-        $isCommit = DB::table('quests')->where('id', $id)->update($data_arr);
+        $isCommit = DB::table('schedules')->where('id', $id)->update($data_arr);
         if ($isCommit > 0) {
-            $this->export(200, DB::table('quests')->where('id', $id)->first());
+            $this->export(200, DB::table('schedules')->where('id', $id)->first());
         } else {
             $this->export(500);
         }

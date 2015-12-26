@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Validator;
 use stdClass;
 
-class QuestsController extends Controller
+class ItemsController extends Controller
 {
 
     /**
@@ -15,7 +15,7 @@ class QuestsController extends Controller
      */
     public function getIndex()
     {
-        $quests = DB::table('quests')->get();
+        $quests = DB::table('items')->get();
         $this->export(200, $quests);
     }
 
@@ -82,7 +82,7 @@ class QuestsController extends Controller
      * @param  int $id
      * @return Response
      */
-    public function putQuest($id)
+    public function putItem($id)
     {
         $input = Input::all();
         $rules = array(

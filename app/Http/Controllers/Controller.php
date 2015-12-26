@@ -14,7 +14,7 @@ class Controller extends BaseController
         header("Access-Control-Allow-Origin: *");
         // header("Access-Control-Allow-Methods:GET,POST,PUT,DELETE");
         header("Content-Type: application/json");
-        $this->sessionFilter();
+//        $this->sessionFilter();
     }
 
     public function export($code, $data = "", $message = "")
@@ -35,7 +35,7 @@ class Controller extends BaseController
                 die;
             }
         } else {
-            Session::set('account', array());
+            Session::set('account', array('uid'=>1));
             Session::set('login-date', date("Ymd"));
         }
     }
