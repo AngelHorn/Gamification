@@ -16,3 +16,5 @@ $app->put('schedules/{id}', 'SchedulesController@putSchedule');
 $app->get('items', 'ItemsController@getIndex');
 $app->post('items', 'ItemsController@postIndex');
 $app->put('items/{id}', 'ItemsController@putItem');
+
+$app->post('upload', 'UploadController@postIndex');
