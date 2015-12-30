@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Validator;
 use stdClass;
 
-class ItemsController extends Controller
+class BagItemsController extends Controller
 {
 
     /**
@@ -15,8 +15,8 @@ class ItemsController extends Controller
      */
     public function getIndex()
     {
-        $quests = DB::table('items')->get();
-        $this->export(200, $quests);
+        $bag_items = DB::table('bag_items')->get();
+        $this->export(200, $bag_items);
     }
 
     /**
@@ -26,24 +26,26 @@ class ItemsController extends Controller
     {
         $input = Input::all();
         $rules = array(
-            'price' => 'required|numeric',
-            'name' => 'required',
-            'img' => 'required',
+            'id' => 'required|numeric',
         );
         $validator = Validator::make($input, $rules);
         if ($validator->fails()) {
             $this->export(403);
             die;
         }
+        $item_counts = DB::table('items')->where('id', $input['id'])->count();
+        if ($item_counts < 1) {
+            $this->export(404);
+            die;
+        }
 
         $data_arr = array(
-            'price' => $input['price'],
-            'name' => $input['name'],
-            'img' => $input['img'],
+            'item_id' => $input['id'],
+            'created_at' => date("Y-m-d H:i:s"),
         );
-        $newId = DB::table('items')->insertGetId($data_arr);
+        $newId = DB::table('bag_items')->insertGetId($data_arr);
         if (is_int($newId)) {
-            $this->export(200, DB::table('items')->where('id', $newId)->first());
+            $this->export(200, DB::table('bag_items')->where('id', $newId)->first());
         } else {
             $this->export(500);
         }
