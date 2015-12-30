@@ -140,7 +140,7 @@ function computeRepeatType_2($schedule_start_at, $todayDateAt)
  */
 function computeRepeatType_3($schedule, $todayDateAt)
 {
-    //1=按日；2=按周；3=按月；4=按年；
+    //3=按日；4=按周；5=按月；6=按年；
     switch ($schedule->repeat_type) {
         case 3:
             $newDay_at = strtotime("+1 day", strtotime($schedule->start_at));
@@ -158,9 +158,6 @@ function computeRepeatType_3($schedule, $todayDateAt)
             Log::error("我们中出了一个叛徒:" . json_encode($schedule));
             $newDay_at = false;
     }
-    //如果大 就放弃  如果等于就return 如果小 证明出错了
-    if (strtotime($todayDateAt) < $newDay_at) {
-        Log::error("有任务出错了 叛徒:" . json_encode($schedule));
-    }
-    return strtotime($todayDateAt) === $newDay_at;
+
+    return strtotime($todayDateAt) >= $newDay_at;
 }
