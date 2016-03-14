@@ -1,6 +1,6 @@
 <?php
 /*
- * 0 0 * * * php /root/nginx/html/gamification/app/Console/Commands/crontab/daily_schedules.php
+ * 30 0 * * * /usr/local/bin/php /root/nginx/html/gamification/app/Console/Commands/crontab/daily_schedules.php
  */
 $app = require __DIR__ . '/../../../../bootstrap/app.php';
 $todayDateAt = date("Y-m-d");
