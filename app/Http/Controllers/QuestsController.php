@@ -145,7 +145,7 @@ class QuestsController extends Controller
             'state' => 4,
         ));
         if ($isCommit > 0) {
-            $this->export(200);
+            $this->export(200, DB::table('quests')->where('id', $id)->first());
         } else {
             $this->export(500);
         }
