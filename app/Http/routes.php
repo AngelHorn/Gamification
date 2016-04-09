@@ -19,3 +19,6 @@ $app->put('items/{id}', 'ItemsController@putItem');
 
 $app->get('bag_items', 'BagItemsController@getIndex');
 $app->post('bag_items', 'BagItemsController@postIndex');
+
+$app->post('upload', 'UploadController@postIndex');
+
