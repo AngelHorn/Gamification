@@ -203,23 +203,23 @@ class QuestsController extends Controller
      */
     private function questTypeFilter($type, $deadline_at = null)
     {
-        $data_arr = array();
+        $quest_arr = array();
         switch ($type) {
             case "1":
-                $data_arr['deadline_at'] = date('Y-m-d');
+                $quest_arr['deadline_at'] = date('Y-m-d');
                 break;
             case "4":
                 if ($deadline_at == date('Y-m-d')) {
-                    $data_arr['type'] = '1';
+                    $quest_arr['type'] = '1';
                 }
-                $data_arr['deadline_at'] = $deadline_at;
+                $quest_arr['deadline_at'] = $deadline_at;
                 break;
             case "0":
             case "2":
             case "3":
             default:
-                $data_arr['deadline_at'] = null;
+                $quest_arr['deadline_at'] = null;
         }
-        return $data_arr;
+        return $quest_arr;
     }
 }
