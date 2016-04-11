@@ -107,12 +107,29 @@ function handlerRepeatType_3($schedule, $todayDateAt)
         'schedule_id' => $schedule->id,
         'state' => 0,
     );
-
+    //3=按日；4=按周；5=按月；6=按年；
+    switch ($schedule->repeat_type) {
+        case 3:
+            $newDay_at = strtotime("+1 day", strtotime($schedule->start_at));
+            break;
+        case 4:
+            $newDay_at = strtotime("+1 week", strtotime($schedule->start_at));
+            break;
+        case 5:
+            $newDay_at = strtotime("+1 month", strtotime($schedule->start_at));
+            break;
+        case 6:
+            $newDay_at = strtotime("+1 year", strtotime($schedule->start_at));
+            break;
+        default:
+            Log::error("我们中出了一个叛徒:" . json_encode($schedule));
+            return;
+    }
     DB::beginTransaction();
     $is_commit_c = DB::table('quests')->insertGetId($data_arr);
-    //更新start_at到今天
+    //更新start_at到下一个更新点
     $is_commit_u = DB::table('schedules')->where('id', $schedule->id)
-        ->update(array('start_at' => $todayDateAt));
+        ->update(array('start_at' => date("Y-m-d", $newDay_at)));
     if ($is_commit_c && is_int($is_commit_u)) {
         DB::commit();
     } else {
@@ -156,8 +173,19 @@ function computeRepeatType_3($schedule, $todayDateAt)
             break;
         default:
             Log::error("我们中出了一个叛徒:" . json_encode($schedule));
-            $newDay_at = false;
+            return false;
     }
-
-    return strtotime($todayDateAt) >= $newDay_at;
+    //当今天的日期等于start的日期时 返回真
+    if (strtotime($todayDateAt) == strtotime($schedule->start_at)) {
+        $result = true;
+    } elseif (strtotime($todayDateAt) > $newDay_at ||
+        strtotime($todayDateAt) < strtotime($schedule->start_at)
+    ) {
+        //计算出start和start+其中的区间 在区间内就不更新 超过了区间肯定要更新 更新的日期不是今天的戳
+        $result = true;
+    } else {
+        //当今日的日期小于start的日期时 返回假
+        $result = false;
+    }
+    return $result;
 }
